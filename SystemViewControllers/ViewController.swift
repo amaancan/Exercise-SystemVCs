@@ -8,8 +8,9 @@
 
 import UIKit
 import SafariServices
+import MessageUI
 
-class ViewController: UIViewController  {
+class ViewController: UIViewController, MFMailComposeViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate  {
 
     @IBOutlet weak var imageView: UIImageView!
     
@@ -68,7 +69,24 @@ class ViewController: UIViewController  {
     }
     
     @IBAction func emailButtonTapped(_ sender: UIButton) {
+        guard MFMailComposeViewController.canSendMail() else {
+            print("Cannot send mail.")
+            return}
+        
+        let mailComposer = MFMailComposeViewController()
+        mailComposer.mailComposeDelegate = self
+        //The mailComposeDelegate is responsible for dismissing the mail compose view controller at the appropriate time. To set the delegate, need to adopt to the MFMailComposeViewControllerDelegate protocol.
+        
+        mailComposer.setToRecipients(["testing@me.com"])
+        mailComposer.setSubject("Attention please")
+        mailComposer.setMessageBody("Hello, this is an email from the app I made.", isHTML: false)
+        
+        present(mailComposer, animated: true, completion: nil)
+        
     }
     
+    func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        //When the user has finished sending an email, they'll need a way to dismiss the mail compose view controller and return to the app. Used the delegate method mailComposeController(didFinishWith:) to dismiss the view.
+        dismiss(animated: true, completion: nil)
+    }
 }
-
